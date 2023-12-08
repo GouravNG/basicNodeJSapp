@@ -1,13 +1,25 @@
 import {addButton,viewSpecific,viewAll, viewSpecificSpace,viewAllSpace,enterStudentArea} from "./reuse.js"
-import studentData from "./studentData.js";
+// import studentData from "./studentData.js";
 
-var count=1;
+// var count=1;
 
-function addStudent(studentName){
-    studentData[count]={studentName:studentName}
-    console.log(`Student:${studentName} added successfully with id:${count}`)
-    count++
-    onSuccessfulAddOfStudent()  
+async function addStudent(studentName){
+    // studentData[count]={studentName:studentName}
+    // console.log(`Student:${studentName} added successfully with id:${count}`)
+    // count++
+    try{
+    const addStudentrequest=await fetch("/addStudent",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({studentToaddd:studentName})
+    })
+    const processStatusMsg=await addStudentrequest.json()
+    console.log(processStatusMsg)
+    onSuccessfulAddOfStudent(processStatusMsg)  
+        }
+    catch(erro){
+        console.log(erro)
+    }
 }
 
 function viewSpecificStudentDetails(id){
@@ -59,20 +71,20 @@ function viewAllHtmlAppender(){
     }
 }
 
-function onSuccessfulAddOfStudent(){ 
+function onSuccessfulAddOfStudent(ASD){ 
     if(document.getElementById("testname3")===null)
     {
         const successTag=document.createElement("p")
         successTag.setAttribute("id","testname3")
-        let id=count-1
-        let Sname=studentData[id]["studentName"]
+        let id=ASD.id
+        let Sname=ASD.sName
         successTag.textContent=`The student ${Sname} with id ${id} added successfully `
         enterStudentArea.append(successTag)
     }
     else{
         const successTag=document.getElementById("testname3")
-        let id=count-1
-        let Sname=studentData[id]["studentName"]
+        let id=ASD.id
+        let Sname=ASD.sName
         successTag.textContent=`The student ${Sname} with id ${id} added successfully `
         enterStudentArea.append(successTag)
     }
