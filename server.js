@@ -38,6 +38,10 @@ const myServer=http.createServer((req,res)=>{
         res.writeHead(200,{"Content-Type":"application/json"})
         res.end(JSON.stringify({msg:studentData[newURL.query.id]}))
     }
+    else if(newURL.pathname=="/getStudent" && newURL.search==null){
+        res.writeHead(200,{"Content-Type":"application/json"})
+        res.end(JSON.stringify(studentData))
+    }
     else
         fileToRead=path.join(__dirname+req.url)
 

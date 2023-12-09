@@ -30,8 +30,13 @@ async function viewSpecificStudentDetails(id){
     // return studentData[id]
 }
 
-function viewAllStudentDetails(){
-    return studentData
+async function viewAllStudentDetails(){
+    let data=await fetch("/getStudent")
+    // console.log(data)
+    let newData=await data.json()
+    console.log(newData)
+    viewAllHtmlAppender(newData)
+    // return studentData
 }
 
 function viewSpecificHtmlAppender(name){
@@ -49,14 +54,14 @@ function viewSpecificHtmlAppender(name){
     }
 }
 
-function viewAllHtmlAppender(){
+function viewAllHtmlAppender(studentData){
     let noOfStudent=Object.keys(studentData).length
     if(document.getElementById("testname2")===null){
         const viewallElementdiv=document.createElement("div")
         viewallElementdiv.setAttribute("id","testname2")
         for(let i=1;i<=noOfStudent;i++){
             const viewallElementPtag=document.createElement("p")
-            let Sname=studentData[i]["studentName"]
+            let Sname=studentData[i]["studentToaddd"]
             viewallElementPtag.textContent=`name:${Sname}`
             viewallElementdiv.append(viewallElementPtag)
         }
@@ -67,7 +72,7 @@ function viewAllHtmlAppender(){
         viewallElementdiv.innerHTML=""
         for(let i=1;i<=noOfStudent;i++){
             const viewallElementPtag=document.createElement("p")
-            let Sname=studentData[i]["studentName"]
+            let Sname=studentData[i]["studentToaddd"]
             viewallElementPtag.textContent=`name:${Sname}`
             viewallElementdiv.append(viewallElementPtag)
         }
@@ -108,6 +113,6 @@ viewSpecific.addEventListener("click",(e)=>{
 })
 
 viewAll.addEventListener("click",(e)=>{
-    console.log(viewAllStudentDetails())
-    viewAllHtmlAppender();
+    viewAllStudentDetails()
+    //;
 })
