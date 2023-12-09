@@ -1,6 +1,7 @@
 const http=require('http')
 const fs=require('fs')
 const path=require('path')
+const url=require('url')
 
 let count=1;
 const studentData={}
@@ -13,7 +14,10 @@ function addStudentToDataBase(newStudent){
 }
 
 const myServer=http.createServer((req,res)=>{
-    if(req.url==="/")
+    let newURL=url.parse(req.url,true)
+    // console.log("Path",newURL.pathname)
+    // console.log("search",newURL.search)
+    if(newURL.pathname==="/")
         fileToRead="./Index.html"
     else if(req.url==="/addStudent" && req.method==="POST")
     {
@@ -28,6 +32,11 @@ const myServer=http.createServer((req,res)=>{
             res.writeHead(200,{"Content-Type":"application/json"})
             res.end(JSON.stringify({id:(count-1),sName:responceObject[(count-1)]["studentToaddd"]}))
         })
+    }
+    else if(newURL.pathname=="/getStudent" && newURL.search!=null ){
+        // console.log(newURL.query.id)
+        res.writeHead(200,{"Content-Type":"application/json"})
+        res.end(JSON.stringify({msg:studentData[newURL.query.id]}))
     }
     else
         fileToRead=path.join(__dirname+req.url)

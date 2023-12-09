@@ -22,8 +22,12 @@ async function addStudent(studentName){
     }
 }
 
-function viewSpecificStudentDetails(id){
-    return studentData[id]
+async function viewSpecificStudentDetails(id){
+    const data=await fetch(`/getStudent?id=${id}`)
+    const newData=await data.json()
+    console.log(newData.msg.studentToaddd)
+    viewSpecificHtmlAppender(newData.msg.studentToaddd)
+    // return studentData[id]
 }
 
 function viewAllStudentDetails(){
@@ -34,14 +38,14 @@ function viewSpecificHtmlAppender(name){
     if(document.getElementById("testname")===null){
         const elementTagg=document.createElement("p")
         elementTagg.setAttribute("id","testname")
-        let Sname=name["studentName"]
-        elementTagg.textContent=`Name:${Sname}`
+        // let Sname=name["studentName"]
+        elementTagg.textContent=`Name:${name}`
         viewSpecificSpace.append(elementTagg)
     }
     else{
         const elementTagg=document.getElementById("testname")
-        let Sname=name["studentName"]
-        elementTagg.textContent=`Name:${Sname}`
+        // let Sname=name["studentName"]
+        elementTagg.textContent=`Name:${name}`
     }
 }
 
@@ -96,9 +100,11 @@ addButton.addEventListener("click",(e)=>{
 
 viewSpecific.addEventListener("click",(e)=>{
     const sID=document.getElementById("studentId").value
-    console.log(sID)
-    console.log(viewSpecificStudentDetails(sID))
-    viewSpecificHtmlAppender(viewSpecificStudentDetails(sID))
+    // console.log(sID)
+    // console.log(viewSpecificStudentDetails(sID))
+    // viewSpecificHtmlAppender(viewSpecificStudentDetails(sID))
+    viewSpecificStudentDetails(sID)
+
 })
 
 viewAll.addEventListener("click",(e)=>{
