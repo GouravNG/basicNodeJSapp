@@ -15,36 +15,33 @@ function addStudentToDataBase(newStudent){
 
 const myServer=http.createServer((req,res)=>{
     let newURL=url.parse(req.url,true)
-    // console.log("Path",newURL.pathname)
-    // console.log("search",newURL.search)
-    if(newURL.pathname==="/")
+
+    if(newURL.pathname==="/")   //default call for HTML
         fileToRead="./Index.html"
-    else if(req.url==="/addStudent" && req.method==="POST")
+
+    else if(req.url==="/addStudent" && req.method==="POST") //check for the post
     {
         let postData=""
-        req.on("data",(chunk)=>{
+        req.on("data",(chunk)=>{ //getting the data
         postData+=chunk;
         })
-        req.on("end",()=>{
-            console.log(postData)
-            const postDatainObject=JSON.parse(postData)
-            let responceObject=addStudentToDataBase(postDatainObject)
-            res.writeHead(200,{"Content-Type":"application/json"})
-            res.end(JSON.stringify({id:(count-1),sName:responceObject[(count-1)]["studentToaddd"]}))
+        req.on("end",()=>{  //on getting the end of data
+            const objectPostData=JSON.parse(postData) //for converting the JSON to Objects
+            let responceObject=addStudentToDataBase(objectPostData)
+            res.writeHead(200,{"Content-Type":"application/json"}) //POST responce msg
+            res.end(JSON.stringify({id:(count-1),studentName:responceObject[(count-1)]["studentName"]})) //converting to JSON
         })
     }
-    else if(newURL.pathname=="/getStudent" && newURL.search!=null ){
-        // console.log(newURL.query.id)
+    else if(newURL.pathname=="/getStudent" && newURL.search!=null ){ //query parameters
         res.writeHead(200,{"Content-Type":"application/json"})
         res.end(JSON.stringify({msg:studentData[newURL.query.id]}))
     }
-    else if(newURL.pathname=="/getStudent" && newURL.search==null){
+    else if(newURL.pathname=="/getStudent" && newURL.search==null){ //non query GET request
         res.writeHead(200,{"Content-Type":"application/json"})
         res.end(JSON.stringify(studentData))
     }
     else
         fileToRead=path.join(__dirname+req.url)
-
     
     fs.readFile(fileToRead,(err,data)=>{
         if(path.extname(fileToRead)===".html")
@@ -54,8 +51,6 @@ const myServer=http.createServer((req,res)=>{
         res.writeHead(200,{"Content-Type":headContent})
         res.end(data)
     })
-
-
 
 })
 const PORT=8080
