@@ -1,14 +1,7 @@
 const mysql=require('mysql2')
 const myQuery=require("./SqlQueries")
 
-const con=mysql.createConnection({ //database connectivity setup
-    host:'localhost',
-    user:"root",
-    password:"Gourav",
-    database:'test'
-})
-
-function table(tableQuery){   //Creation of the table
+ function table(con,tableQuery){   //Creation of the table
     con.query(tableQuery,(err,result)=>{ //Table creation query
         if(err){
         console.log("Error in creation of table",err)
@@ -18,7 +11,7 @@ function table(tableQuery){   //Creation of the table
     })
 }
 
-function insertFunction(insertQuery,studentName){ //Student insertion
+ function insertFunction(con,insertQuery,studentName){ //Student insertion
     con.query(insertQuery(studentName),(err,result)=>{ 
         if(err){
             console.log("Error in inserting the data",err)
@@ -28,7 +21,7 @@ function insertFunction(insertQuery,studentName){ //Student insertion
     })
 }
 
-function viewSpecificFunction(viewSpecificQuery,id){ //viewSpecific
+ function viewSpecificFunction(con,viewSpecificQuery,id){ //viewSpecific
     con.query(viewSpecificQuery(id),(err,result,fields)=>{
         if(err){
             console.log("Error in viewing the data")
@@ -38,7 +31,7 @@ function viewSpecificFunction(viewSpecificQuery,id){ //viewSpecific
     })
 }
 
-function viewFunction(viewQuery){ //viewAll
+ function viewFunction(con,viewQuery){ //viewAll
     con.query(viewQuery,(err,result,fields)=>{
         if(err){
             console.log("Error in viewing the data")
@@ -48,7 +41,7 @@ function viewFunction(viewQuery){ //viewAll
     })
 }
 
-function lastId(lastIdQuery){ //for last id
+ function lastId(con,lastIdQuery){ //for last id
     con.query(lastIdQuery,(err,result)=>{
         if(err){
             console.log("Error in fetching the last id:",err)
@@ -59,24 +52,31 @@ function lastId(lastIdQuery){ //for last id
 }
 
 //database connection
-function dbConnection(callback,parameters){
+ function dbConnection(callback,parameters){
+    const con=mysql.createConnection({ //database connectivity setup
+        host:'localhost',
+        user:"root",
+        password:"Gourav",
+        database:'test'
+    })
     con.connect((err)=>{    
         if(err){
         console.log("Error in connecting to database",err)
         return
         }
-        callback(...parameters)
+        console.log("Connected to database")
+        callback(con,...parameters)
         con.end() //closing of the connection
     })
 
 }
 
 
-//dbConnection(table,[myQuery.tableQuery])
-dbConnection(insertFunction,[myQuery.insertQuery,"Dia"])
-//dbConnection(viewFunction,[myQuery.viewQuery])
-//dbConnection(viewSpecificFunction,[myQuery.viewSpecificQuery,18])
-//dbConnection(lastId,[myQuery.lastIdQuery])
+// dbConnection(table,[myQuery.tableQuery])
+// dbConnection(insertFunction,[myQuery.insertQuery,"Dia"])
+// dbConnection(viewFunction,[myQuery.viewQuery])
+// dbConnection(viewSpecificFunction,[myQuery.viewSpecificQuery,18])
+// dbConnection(lastId,[myQuery.lastIdQuery])
 
 
 
