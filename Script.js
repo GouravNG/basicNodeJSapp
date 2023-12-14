@@ -24,7 +24,8 @@ async function viewSpecificStudentDetails(id){
 async function viewAllStudentDetails(){
     let data=await fetch("/getStudent")
     let newData=await data.json()
-    viewAllHtmlAppender(newData)
+    console.log(newData)
+    // viewAllHtmlAppender(newData)
 }
 
 function viewSpecificHtmlAppender(name){

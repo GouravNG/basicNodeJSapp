@@ -2,6 +2,8 @@ const http=require('http')
 const fs=require('fs')
 const path=require('path')
 const url=require('url')
+const db=require("./SqlFunctions")
+const myQuery=require("./SqlQueries")
 
 let count=1;
 const studentData={}
@@ -13,7 +15,7 @@ function addStudentToDataBase(newStudent){
     return studentData
 }
 
-const myServer=http.createServer((req,res)=>{
+const myServer=http.createServer(async (req,res)=>{
     let newURL=url.parse(req.url,true)
 
     if(newURL.pathname==="/")   //default call for HTML
@@ -36,10 +38,19 @@ const myServer=http.createServer((req,res)=>{
         res.writeHead(200,{"Content-Type":"application/json"})
         res.end(JSON.stringify({msg:studentData[newURL.query.id]}))
     }
-    else if(newURL.pathname=="/getStudent" && newURL.search==null){ //non query GET request
-        res.writeHead(200,{"Content-Type":"application/json"})
-        res.end(JSON.stringify(studentData))
+    else if (newURL.pathname === "/getStudent" && newURL.search == null) { //non query GET request
+        try {
+            let result = await db.dbConnection(db.viewFunction, [myQuery.viewQuery]);
+            console.log("here inside the server file", result);
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify(result));
+        } catch (err) {
+            console.log(err);
+            res.writeHead(500, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ error: "Internal Server Error" }));
+        }
     }
+    
     else
         fileToRead=path.join(__dirname+req.url)
     
