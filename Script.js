@@ -18,14 +18,14 @@ async function addStudent(studentName){
 async function viewSpecificStudentDetails(id){
     const data=await fetch(`/getStudent?id=${id}`)
     const newData=await data.json()
-    viewSpecificHtmlAppender(newData.msg.studentName)
+    console.log(newData)
+    viewSpecificHtmlAppender(newData.msg[0]["Name"])
 }
 
 async function viewAllStudentDetails(){
     let data=await fetch("/getStudent")
     let newData=await data.json()
-    console.log(newData)
-    // viewAllHtmlAppender(newData)
+    viewAllHtmlAppender(newData)
 }
 
 function viewSpecificHtmlAppender(name){
@@ -42,13 +42,13 @@ function viewSpecificHtmlAppender(name){
 }
 
 function viewAllHtmlAppender(studentData){
-    let noOfStudent=Object.keys(studentData).length
+    let noOfStudent=studentData.length
     if(document.getElementById("testname2")===null){
         const viewallElementdiv=document.createElement("div")
         viewallElementdiv.setAttribute("id","testname2")
-        for(let i=1;i<=noOfStudent;i++){
+        for(let i=0;i<noOfStudent;i++){
             const viewallElementPtag=document.createElement("p")
-            let Sname=studentData[i]["studentName"]
+            let Sname=studentData[i]["Name"]
             viewallElementPtag.textContent=`name:${Sname}`
             viewallElementdiv.append(viewallElementPtag)
         }
@@ -59,7 +59,7 @@ function viewAllHtmlAppender(studentData){
         viewallElementdiv.innerHTML=""
         for(let i=1;i<=noOfStudent;i++){
             const viewallElementPtag=document.createElement("p")
-            let Sname=studentData[i]["studentName"]
+            let Sname=studentData[i]["Name"]
             viewallElementPtag.textContent=`name:${Sname}`
             viewallElementdiv.append(viewallElementPtag)
         }

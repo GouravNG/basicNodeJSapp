@@ -35,13 +35,13 @@ const myServer=http.createServer(async (req,res)=>{
         })
     }
     else if(newURL.pathname=="/getStudent" && newURL.search!=null ){ //query parameters
+        let result = await db.dbConnection(db.viewSpecificFunction,[myQuery.viewSpecificQuery,(newURL.query.id)]);
         res.writeHead(200,{"Content-Type":"application/json"})
-        res.end(JSON.stringify({msg:studentData[newURL.query.id]}))
+        res.end(JSON.stringify({msg:result}))
     }
     else if (newURL.pathname === "/getStudent" && newURL.search == null) { //non query GET request
         try {
             let result = await db.dbConnection(db.viewFunction, [myQuery.viewQuery]);
-            console.log("here inside the server file", result);
             res.writeHead(200, { "Content-Type": "application/json" });
             res.end(JSON.stringify(result));
         } catch (err) {

@@ -11,23 +11,27 @@ const mysql=require('mysql2')
 }
 
  function insertFunction(con,insertQuery,studentName){ //Student insertion
+    return new Promise((resolve,reject)=>{
     con.query(insertQuery(studentName),(err,result)=>{ 
         if(err){
             console.log("Error in inserting the data",err)
-            return con.end()
+            reject(err)
         }
-        console.log("Student added to database successfully")
+        resolve("Student added to database successfully")
     })
+})
 }
 
  function viewSpecificFunction(con,viewSpecificQuery,id){ //viewSpecific
+    return new Promise((resolve,reject)=>{
     con.query(viewSpecificQuery(id),(err,result,fields)=>{
         if(err){
             console.log("Error in viewing the data")
-            return con.end()
+            reject(err)
         }
-        console.log("Students",result)
+        resolve(result)
     })
+})
 }
 
 function viewFunction(con, viewQuery) {
@@ -45,13 +49,15 @@ function viewFunction(con, viewQuery) {
 
 
  function lastId(con,lastIdQuery){ //for last id
+    return new Promise ((resolve,reject)=>{
     con.query(lastIdQuery,(err,result)=>{
         if(err){
             console.log("Error in fetching the last id:",err)
-            return con.end()
+            reject(err)
         }
-        console.log(result)
+        resolve(result)
     })
+})
 }
 
 //database connection
@@ -84,7 +90,7 @@ function dbConnection(callback, parameters) {
     });
 }
 
-module.exports={viewFunction,dbConnection}
+module.exports={dbConnection,viewFunction,viewSpecificFunction,table,insertFunction,lastId}
 
 // dbConnection(table,[myQuery.tableQuery])
 // dbConnection(insertFunction,[myQuery.insertQuery,"Dia"])
