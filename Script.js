@@ -57,7 +57,7 @@ function viewAllHtmlAppender(studentData){
     else{
         const viewallElementdiv=document.getElementById("testname2")
         viewallElementdiv.innerHTML=""
-        for(let i=1;i<=noOfStudent;i++){
+        for(let i=0;i<noOfStudent;i++){
             const viewallElementPtag=document.createElement("p")
             let Sname=studentData[i]["Name"]
             viewallElementPtag.textContent=`name:${Sname}`

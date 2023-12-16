@@ -5,14 +5,9 @@ const url=require('url')
 const db=require("./SqlFunctions")
 const myQuery=require("./SqlQueries")
 
-let count=1;
-const studentData={}
-
-function addStudentToDataBase(newStudent){
-    studentData[count]=newStudent;
-    count++
-    console.log(studentData)
-    return studentData
+async function addStudentToDataBase(newStudent){
+    const flag= await db.dbConnection(db.insertFunction,[myQuery.insertQuery,newStudent.studentName])
+    return flag
 }
 
 const myServer=http.createServer(async (req,res)=>{
@@ -21,31 +16,42 @@ const myServer=http.createServer(async (req,res)=>{
     if(newURL.pathname==="/")   //default call for HTML
         fileToRead="./Index.html"
 
-    else if(req.url==="/addStudent" && req.method==="POST") //check for the post
-    {
-        let postData=""
-        req.on("data",(chunk)=>{ //getting the data
-        postData+=chunk;
-        })
-        req.on("end",()=>{  //on getting the end of data
-            const objectPostData=JSON.parse(postData) //for converting the JSON to Objects
-            let responceObject=addStudentToDataBase(objectPostData)
-            res.writeHead(200,{"Content-Type":"application/json"}) //POST responce msg
-            res.end(JSON.stringify({id:(count-1),studentName:responceObject[(count-1)]["studentName"]})) //converting to JSON
-        })
+    else if (req.url === "/addStudent" && req.method === "POST") {
+        let postData = "";
+
+        req.on("data", (chunk) => {
+            // Getting the data
+            postData += chunk;
+        });      
+        req.on("end", async () => {
+            try {
+                const objectPostData = JSON.parse(postData); // For converting the JSON to Objects
+                let responseObject = await addStudentToDataBase(objectPostData);
+
+                res.writeHead(200, { "Content-Type": "application/json" }); // POST response msg
+                res.end(JSON.stringify({ "MSG": "SUCCESS" })); // Converting to JSON
+            } catch (error) {
+                console.error("Error parsing JSON:", error);
+
+                res.writeHead(500, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ "MSG": "FAILURE", "error": "Invalid JSON data" }));
+            }
+        });
     }
+        
     else if(newURL.pathname=="/getStudent" && newURL.search!=null ){ //query parameters
         let result = await db.dbConnection(db.viewSpecificFunction,[myQuery.viewSpecificQuery,(newURL.query.id)]);
         res.writeHead(200,{"Content-Type":"application/json"})
         res.end(JSON.stringify({msg:result}))
     }
+
     else if (newURL.pathname === "/getStudent" && newURL.search == null) { //non query GET request
         try {
             let result = await db.dbConnection(db.viewFunction, [myQuery.viewQuery]);
             res.writeHead(200, { "Content-Type": "application/json" });
             res.end(JSON.stringify(result));
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong",err);
             res.writeHead(500, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ error: "Internal Server Error" }));
         }

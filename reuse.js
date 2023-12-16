@@ -4,4 +4,3 @@ export const viewAll=document.getElementById("viewAllButton")
 export const viewSpecificSpace=document.getElementById("viewSpecific")
 export const viewAllSpace=document.getElementById("viewAll")
 export const enterStudentArea=document.getElementById("enterStudent")
-

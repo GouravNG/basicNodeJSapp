@@ -1,12 +1,14 @@
 const mysql=require('mysql2')
 
  function table(con,tableQuery){   //Creation of the table
-    con.query(tableQuery,(err,result)=>{ //Table creation query
-        if(err){
-        console.log("Error in creation of table",err)
-        return con.end()
-        }
-        console.log ("Table Created/Already Exist")
+    return new Promise ((resolve,reject)=>{
+        con.query(tableQuery,(err,result)=>{ //Table creation query
+            if(err){
+            console.log("Error in creation of table",err)
+            reject(err)
+            }
+            resolve("Successfully created the table")
+        })
     })
 }
 
@@ -17,7 +19,7 @@ const mysql=require('mysql2')
             console.log("Error in inserting the data",err)
             reject(err)
         }
-        resolve("Student added to database successfully")
+        resolve(1)
     })
 })
 }
@@ -69,15 +71,13 @@ function dbConnection(callback, parameters) {
             password: 'Gourav',
             database: 'test'
         });
-
-        con.connect( (err) => {
+        con.connect(async (err) => {
             if (err) {
                 console.log("Error in connecting to database", err);
                 reject(err);
             } else {
-                console.log("Connected to database");
                 try {
-                    const result = callback(con, ...parameters);
+                    const result = await callback(con, ...parameters);
                     resolve(result);
                 } catch (error) {
                     console.error(error);
@@ -89,11 +89,4 @@ function dbConnection(callback, parameters) {
         });
     });
 }
-
 module.exports={dbConnection,viewFunction,viewSpecificFunction,table,insertFunction,lastId}
-
-// dbConnection(table,[myQuery.tableQuery])
-// dbConnection(insertFunction,[myQuery.insertQuery,"Dia"])
-// dbConnection(viewFunction,[myQuery.viewQuery])
-// dbConnection(viewSpecificFunction,[myQuery.viewSpecificQuery,18])
-// dbConnection(lastId,[myQuery.lastIdQuery])
