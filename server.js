@@ -6,8 +6,15 @@ const db=require("./SqlFunctions")
 const myQuery=require("./SqlQueries")
 
 async function addStudentToDataBase(newStudent){
-    const flag= await db.dbConnection(db.insertFunction,[myQuery.insertQuery,newStudent.studentName])
-    return flag
+    let flag=1
+    flag= await db.dbConnection(db.insertFunction,[myQuery.insertQuery,newStudent.studentName])
+    if(flag){
+        id=await db.dbConnection(db.lastId,[myQuery.lastIdQuery])
+        let result = await db.dbConnection(db.viewSpecificFunction,[myQuery.viewSpecificQuery,id[0]['MAX(id)']]);
+        return result;
+    }
+    else
+        return "some thing went wrong"
 }
 
 const myServer=http.createServer(async (req,res)=>{
@@ -27,9 +34,10 @@ const myServer=http.createServer(async (req,res)=>{
             try {
                 const objectPostData = JSON.parse(postData); // For converting the JSON to Objects
                 let responseObject = await addStudentToDataBase(objectPostData);
-
+                console.log("just above end",responseObject)
                 res.writeHead(200, { "Content-Type": "application/json" }); // POST response msg
-                res.end(JSON.stringify({ "MSG": "SUCCESS" })); // Converting to JSON
+                res.write(JSON.stringify({ "MSG": "responseObject" }))
+                res.end(); 
             } catch (error) {
                 console.error("Error parsing JSON:", error);
 
